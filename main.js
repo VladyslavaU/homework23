@@ -16,17 +16,32 @@ console.log(wordsList(myLongStr, 'rep')); // {"repellendus", "repudiandae", "rep
 
 console.log('******TASK 2*********')
 
-function getLocalDate(date, isSeconds, isISO) {
-    let lastIndex = isSeconds ? 20 : 17;
-    if (isISO) {
-        date.setHours(date.getHours() + 3);
-        return date.toISOString().replace('T', ', ').substring(0, lastIndex);
+let myDate = new Date();
+
+let getLocalDate = (date, isSeconds = false, isISO = false) => {
+    const reg = new RegExp(':\\d{2}$', 'gui');
+    let res;
+
+    if (!isISO) {
+        res = isSeconds
+            ? date.toLocaleString()
+            : date.toLocaleString().replace(reg, '');
+    } else {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1 < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+        const day = date.getDate() < 9 ? `0${date.getDate()}` : date.getDate();
+        const hour = date.getHours() < 9 ? `0${date.getHours()}` : date.getHours();
+        const minutes = date.getMinutes() < 9 ? `0${date.getMinutes()}` : date.getMinutes();
+        const seconds = date.getSeconds() < 9 ? `0${date.getSeconds()}` : date.getSeconds();
+
+        res = isSeconds
+            ? `${year}-${month}-${day}, ${hour}:${minutes}:${seconds}`
+            : `${year}-${month}-${day}, ${hour}:${minutes}`;
     }
-    return date.toLocaleString('en-GB', {timeZone: 'Europe/Kiev'})
-        .substring(0, lastIndex)
-        .replace(/(\s)(\d:)/g, (match, space, digitColon) => space + "0" + digitColon)
-        .replaceAll('/', '.');
-}
+
+    return res;
+};
+
 
 console.log(getLocalDate(new Date(123456), false, true) === '1970-01-01, 03:02');
 console.log(getLocalDate(new Date(123456), true, true) === '1970-01-01, 03:02:03');
@@ -38,16 +53,8 @@ console.log(getLocalDate(new Date(1999999123456), true, true) === '2033-05-18, 0
 console.log('******TASK 3*********')
 
 function getWeekDay(date) {
-    const weekDays = {
-        1: 'Понедельник',
-        2: 'Вторник',
-        3: 'Среда',
-        4: 'Четверг',
-        5: 'Пятница',
-        6: 'Суббота',
-        7: 'Воскресенье'
-    }
-    return weekDays[new Date(date).getDay()];
+    return ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота']
+        [new Date(date).getDay()];
 }
 
 console.log(getWeekDay('2019-01-30')); // среда
@@ -55,8 +62,10 @@ console.log(getWeekDay('2019-07-16')); // вторник
 console.log(getWeekDay('2019-07-27')); // суббота
 
 console.log('******TASK 4*********')
+
 function getLocalDay(date) {
-    return new Date(date).getDay();
+    let day = new Date(date).getDay();
+    return day === 0 ? 7 : day;
 }
 
 console.log(getLocalDay('2019-07-16')); // 2
@@ -105,7 +114,6 @@ Object.defineProperties(Car.prototype, {
 Car.prototype.info = function () {
     return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
 };
-
 
 
 let car = new Car(2000, 'Lacetti', 'Chevrolet', 2010);
